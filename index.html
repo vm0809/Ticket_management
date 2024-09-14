@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket System</title>
+    <link rel="stylesheet" href="style.css"> <!-- Linking external CSS file -->
+</head>
+<body>
+    <div class="container">
+        <h1>Submit a Problem</h1>
+        <form id="problemForm" class="form">
+            <div class="form-group">
+                <label for="problem">Problem:</label>
+                <textarea id="problem" name="problem" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <button type="submit" class="submit-btn">Submit Problem</button>
+        </form>
+        <p id="response" class="response"></p>
+    </div>
+
+    <script>
+        document.getElementById('problemForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const problem = document.getElementById('problem').value;
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/submitProblem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ problem, email }),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('response').textContent = `Ticket created! Your ticket number is: ${result.ticketNumber}`;
+                    document.getElementById('response').style.color = 'green';
+                } else {
+                    document.getElementById('response').textContent = `Error: ${result.error}`;
+                    document.getElementById('response').style.color = 'red';
+                }
+            } catch (error) {
+                document.getElementById('response').textContent = 'Failed to submit problem';
+                document.getElementById('response').style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>
